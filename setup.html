@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>DOCKER SETUP</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+</head>
+<style>
+    .heading {
+        text-align: center;
+        font-weight: bold;
+        font-size: 20;
+        text-transform: uppercase;
+    }
+
+    .desp {
+        text-indent: 2%;
+        font-size: 18;
+        text-transform: uppercase;
+        font-weight: bold;
+        text-decoration: underline;
+    }
+
+    .desp1 {
+        text-indent: 3%;
+        font-size: 16;
+        font-weight: bold;
+    }
+
+    pre {
+        text-indent: 4%;
+        font-size: 15;
+        font-weight: bold;
+    }
+    .centr{
+        text-align: center;
+    }
+</style>
+
+<body>
+    <h1 class="centr">DOCKER DOCUMENT</h1>
+    <p class="desp">Docker IMAGES
+    </p>
+    <p class="desp1">Docker images contain executable application source code as well as all the tools,
+        libraries, and dependencies that the application code needs to run as a container.
+    </p>
+    <p class="desp">Docker CONTAINERS
+    </p>
+    <p class="desp1">Docker containers are the live, running instances of Docker images.
+    </p>
+    <p class="desp">Docker VOLUMES
+    </p>
+    <p class="desp1">Docker volumes are the storage purpose of container.
+    </p>
+    <p class="desp">DOCKERFILE
+    </p>
+    <p class="desp1">Every Docker container starts with a simple text file containing instructions
+        for how to build the Docker container image.</p>
+    <p class="desp">DOCKER REGISTRY
+    </p>
+    <p class="desp1">A Docker registry is a scalable open-source storage and distribution system for Docker images.
+        The registry enables you to track image versions in repositories.</p>
+    <p class="desp">DOCKER HUB
+    </p>
+    <p class="desp1">Docker Hub (link resides outside ibm.com) is the public repository of Docker images
+        that calls itself the “world’s largest library and community for container images.”</p>
+    <p class="desp">DOCKER COMMANDS (use powershell)
+    </p>
+    <pre>docker --version - (docker version check)
+    </pre>
+    <p class="desp">PULL NEW IMAGE
+    </p>
+    <pre>docker pull imagename:version (if not specify version latest will pull)
+        e.g : docker pull nginx:1.25</pre>
+    <p class="desp">LIST ALL IMAGES</p>
+    <pre>docker images - (pulled images can see like below)
+        -----------------------------------------------------------
+        REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
+        redis        latest    424380006071   40 hours ago   138MB
+        nginx        1.25      d453dd892d93   2 months ago   187MB
+        ------------------------------------------------------------
+    </pre>
+    <p class="desp">RUN IMAGE
+    </p>
+    <pre>docker run nginx (will run latest)
+        docker run nginx:1.25 (will run specific version)
+        (we can check docker desktop every a new container will create for the image)</pre>
+    <p class="desp">LIST CONTAINERS
+    </p>
+    <pre>
+        docker ps  (can see active container status and it names )
+        ---------------------------------------------------------------------------------------------------------------------------------------
+        CONTAINER ID   IMAGE        COMMAND                  CREATED          STATUS          PORTS                    NAMES
+        bca953c050b1   nginx:1.25   "/docker-entrypoint.…"   5 minutes ago    Up 5 minutes    80/tcp                   priceless_keldysh
+        c46ededd7e3a   redis        "docker-entrypoint.s…"   21 minutes ago   Up 17 minutes   0.0.0.0:6379->6379/tcp   smredis
+        ----------------------------------------------------------------------------------------------------------------------------------------
+    </pre>
+    <p class="desp">NAMING OUR CONTAINER
+    </p>
+    <pre>docker run --name customname imagename (like below specify container name other wise its take random name)
+         docker run --name testnginx nginx:1.25
+        
+         ----------------------------------------------------------------------------------------------------------------------------------------
+         CONTAINER ID   IMAGE        COMMAND                  CREATED              STATUS              PORTS                    NAMES
+         ed76f696cee0   nginx:1.25   "/docker-entrypoint.…"   About a minute ago   Up About a minute   80/tcp                   testnginx
+         ----------------------------------------------------------------------------------------------------------------------------------------
+         </pre>
+    <p class="desp">KEEP RUN DOCKER EVEN CLOSE THE POWERSHELL / CMD
+    </p>
+    <pre> docker run -d (-d => datach from the powershell or cmd)
+          docker run -d --name testnginx nginx:1.25 (here we detach and custom name our container)
+        </pre>
+    <p class="desp">PORT FORWADING / PORT BINDING
+    </p>
+    <p class="desp1">docker images are running inside the container with specific port in that same port we use in our system its not working
+        because docker container is different so we do port forwarding.
+        </p>
+        <pre> docker run -d(detach) -p(publish) our_system_port:container_port --custom_name_of_container image_name:version
+              docker run -d -p 4000:80 --name samplenginx nginx:1.25</pre>
+    <p class="desp">CLOSE / STOP CONTAINER
+    </p>
+    <pre>  docker stop container name / container id
+           docker stop ed76f696cee0 / docker stop testnginx
+        </pre>
+    <p class="desp">CREATE OUR OWN DOCKER IMAGE
+    </p>
+    <p class="desp1">1. Create a dockerfile inside the project folder (Dockerfile)</p>
+    <p class="desp1">2. Create a dockerignore file like gitignore (.dockerignore)</p>
+    <p class="desp">CREATE DOCKERFILE
+    </p>
+    <p class="desp1">Based on our application we want to setup images on the dockerfile.
+        here we create a dockerimg for our nodejs so we want a nodejs server and os where it will execute ,
+        we configure those things while create a dockerfile. </p>
+    <p class="desp">COMMANDS FOR DOCKERFILE (for nodejs app)
+    </p>
+    <pre>
+            #Dockerfile
+
+                    # From baseimage - node is the base image here and alpine is the os which node will run other the numbers are tags or version 
+                    # FROM baseImage:
+
+                    FROM node:21-alpine3.18
+
+                    #WORKDIR /the/workdir/path (here we give the directory)
+
+                    WORKDIR /app
+
+                    #COPY source dest - source is the package.json file destination is the app (because app is the default running env of docker)
+
+                    COPY package.json /app
+
+                    #RUN command
+
+                    RUN npm install
+
+                    COPY . /app
+
+                    #CMD [ "executable" ] (give run cmds , multiple words means give sepration inside array)
+
+                    CMD [ "node","index" ]
+    </pre>
+    <p class="desp">FINAL CMD FOR AFTER COMPLETE THE DOCKERFILE SCRIPTS
+    </p>
+    <pre> docker build -tagname app-name: version .dot (.dot for run cmd where dockerfile is located)
+
+          docker build -t node-app:1.0 .
+        </pre>
+    <p class="desp">DOCKER TAG IMAGE FOR PUSH TO DOCKER REPOSITORY
+    </p>
+    <p class="desp1">First we need to tag our image with our docker account use below cmd
+    </p>
+    <pre> docker tag local image name:tag name docker user id/local image_name:tagname
+
+          docker tag node-app:1.0 kesavaraj3111/node-app:1.0</pre>
+    <p class="desp">DOCKER PUSH IMAGE
+    </p>
+    <pre>docker push kesavaraj3111/node-app:1.0
+    </pre>
+    <p class="desp">DOCKER PULL IMAGE
+    </p>
+    <pre>docker pull kesavaraj3111/node-app:1.0 (available in docker hub)
+    </pre>
+    <p class="desp">CREATE OUR DOCKER IMAGE AS TAR FILE
+    </p>
+    <pre> docker save -o tarfilename imagename:tagname
+          docker save -o angular-app.tar angular-app:1</pre>
+    <p class="desp">LOAD THE TAR FILE AS DOCKER IMAGE
+    </p>
+    <pre>
+            docker load -input <tarfilename>
+            docker load -i angular-app.tar
+            
+    </pre>
+    <p class="desp">ERRORS</p>
+    <p class="desp1">Error: deamon is not running 
+        & 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon (poershell run as admin)</p>
+    <br>
+    <br>
+    <br>
+    <br>
+</body>
+
+</html>
